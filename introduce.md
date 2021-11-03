@@ -106,7 +106,7 @@ module.exports = process.env
 ```js
 const Koa = require('koa')
 
-const { APP_PORT } = require('./config/config.default')
+const { APP_PORT } = require('./src/config/config.default')
 
 const app = new Koa()
 
@@ -158,9 +158,9 @@ module.exports = router
 ```js
 const Koa = require('koa')
 
-const { APP_PORT } = require('./config/config.default')
+const { APP_PORT } = require('./src/config/config.default')
 
-const userRouter = require('./router/user.route')
+const userRouter = require('./src/router/user.route')
 
 const app = new Koa()
 
@@ -192,7 +192,7 @@ module.exports = app
 改写`main.js`
 
 ```js
-const { APP_PORT } = require('./config/config.default')
+const { APP_PORT } = require('./src/config/config.default')
 
 const app = require('./app')
 
