@@ -1,6 +1,53 @@
+/*
+* conteoller层   业务逻辑
+*/
+const {createUser, findUserInfo} = require("../service/user.service")
+
+//实现一些对接口的逻辑操作，实现相应路由的实现函数
 class UserController {
     //注册controller层
     async register(ctx,next){
+        //接收数据
+        console.log(ctx.request.body);
+        let {user_name,password} = ctx.request.body;
+        //校验数据
+        // if(!user_name || !password){
+        //     console.error("用户名或密码为空");
+        //     ctx.status = 400;
+        //     ctx.body = {
+        //         code: "10001",
+        //         message: "用户名或密码不能为空"
+        //     };
+        //     return       //防止代码继续执行
+        // }
+
+        // let fres = await findUserInfo({user_name});
+        // if(fres !== null){
+        //     ctx.body = {
+        //         code: "0001",
+        //         message: "该用户名已存在"
+        //     };
+        //     return
+        // }
+        try {
+            //操作数据库
+            let res = await createUser(user_name,password);
+            //响应数据
+            ctx.body = {
+                code: "0000",
+                message: "注册成功",
+                result: {
+                    id: res.id,
+                    userName: res.user_name
+                }
+            };
+        } catch (err){
+            console.error(err);
+            ctx.app.emit('error',{
+                code: "1001",
+                message: "服务器出错，注册失败"
+            },ctx);
+        }
 
     }
     //登录
@@ -9,4 +56,4 @@ class UserController {
     }
 }
 
-module.exports = UserController
+module.exports = new UserController()
