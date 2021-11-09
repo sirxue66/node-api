@@ -13,14 +13,15 @@ class UserService {
         return res.dataValues;
     }
 
-    async findUserInfo({id,user_name,is_admin}){
+    async findUserInfo({id,user_name,password,is_admin}){
         let whereOptions = {};
         id && Object.assign(whereOptions, {id});        //id存在 就合并到whereOptions对象中
         user_name && Object.assign(whereOptions, {user_name});
+        password && Object.assign(whereOptions, {password});
         is_admin && Object.assign(whereOptions, {is_admin});
 
         let res = await User.findOne({
-            attributes: ['id','user_name','is_admin'],  //查询的字段名
+            attributes: ['id','user_name','password','is_admin'],  //查询的字段名
             where: whereOptions
         });
         return res ? res.dataValues : null

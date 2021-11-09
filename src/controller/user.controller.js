@@ -2,10 +2,12 @@
 * conteoller层   业务逻辑
 */
 const {createUser, findUserInfo} = require("../service/user.service")
+const jwt = require("jsonwebtoken")
+const {JWT_SECRET} = require("../config/default")
 
 //实现一些对接口的逻辑操作，实现相应路由的实现函数
 class UserController {
-    //注册controller层
+    //注册
     async register(ctx,next){
         //接收数据
         console.log(ctx.request.body);
@@ -52,7 +54,34 @@ class UserController {
     }
     //登录
     async login(ctx,next){
+        const {user_name} = ctx.request.body;
+        //将用户 id user_name, isAdmin 放进token中
+        try {
+            let res = await findUserInfo({user_name});
+            let {password, ...userInfo} = res;          //利用解构将查出来的用户信息除了password，其余的放入userInfo中
 
+            ctx.body = {
+                code: "0000",
+                message: "登录成功",
+                result: {
+                    token: jwt.sign(userInfo, JWT_SECRET, {expiresIn: '1d'}),      //用户信息    密钥    过期时间
+                    userInfo: userInfo
+                }
+            }
+        }
+        catch (e) {
+            console.error(e,"登录失败");
+            ctx.app.emit('error',{
+                code: "1002",
+                message: "抱歉，登录失败"
+            },ctx);
+        }
+    }
+
+    //修改密码
+    async resetPassword(ctx,next){
+
+        ctx.body = "密码修改成功";
     }
 }
 
