@@ -26,6 +26,16 @@ class UserService {
         });
         return res ? res.dataValues : null
     }
+
+    async updateUserInfo(obj={},id){
+        let res = await User.update(obj,{
+            where: {
+                id: id
+            }
+        })
+        console.log("修改密码的结果",res);
+        return res[0] > 0 ? true : false;
+    }
 }
 
 module.exports = new UserService()

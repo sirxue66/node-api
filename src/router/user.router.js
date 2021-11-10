@@ -3,9 +3,9 @@
 */
 const Router = require("koa-router")
 const {userValidator, verifyUser, verifyLogin} = require("../middleware/user.middleware")
-const {crpytPassword} = require("../middleware/bcrpyt")
+const {crpytPassword, crpytNewPassword} = require("../middleware/bcrpyt")
 const {auth} = require("../middleware/auth.middleware")
-const { register, login, resetPassword } = require("../controller/user.controller")
+const { register, login, resetPassword, logout } = require("../controller/user.controller")
 
 const userRouter = new Router({prefix: '/user'})     //参数是默认前缀
 
@@ -16,6 +16,8 @@ userRouter.post('/register',userValidator, verifyUser, crpytPassword, register) 
 
 userRouter.post('/login', userValidator, verifyLogin, login)
 
-userRouter.post('/resetPassword', auth, resetPassword)
+userRouter.post('/resetPassword', auth, crpytNewPassword, resetPassword)
+
+userRouter.post('/logout',logout)
 
 module.exports = userRouter

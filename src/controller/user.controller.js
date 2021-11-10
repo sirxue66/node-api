@@ -1,9 +1,10 @@
 /*
 * conteoller层   业务逻辑
 */
-const {createUser, findUserInfo} = require("../service/user.service")
+const {createUser, findUserInfo, updateUserInfo} = require("../service/user.service")
 const jwt = require("jsonwebtoken")
 const {JWT_SECRET} = require("../config/default")
+const blackUser = require("../config/blackList")
 
 //实现一些对接口的逻辑操作，实现相应路由的实现函数
 class UserController {
@@ -58,8 +59,8 @@ class UserController {
         //将用户 id user_name, isAdmin 放进token中
         try {
             let res = await findUserInfo({user_name});
-            let {password, ...userInfo} = res;          //利用解构将查出来的用户信息除了password，其余的放入userInfo中
-
+            let {password, ...userInfo} = res;          //利用解构将查出来的用户信息 除了 password，其余的放入userInfo中
+            console.log("登录的token密钥",JWT_SECRET);
             ctx.body = {
                 code: "0000",
                 message: "登录成功",
@@ -80,8 +81,46 @@ class UserController {
 
     //修改密码
     async resetPassword(ctx,next){
+        const {newPassword} = ctx.request.body;
+        const {id} = ctx.state.user;
+        if(!newPassword){
+            ctx.body = {
+                code: "0001",
+                message: "新密码不能为空"
+            };
+        }
+        try {
+            let res = await updateUserInfo({password: newPassword},id);
+            if(res){
+                ctx.body = {
+                    code: "0000",
+                    message: "密码修改成功"
+                };
+            } else {
+                ctx.body = {
+                    code: "0002",
+                    message: "密码修改失败"
+                };
+            }
+        }
+        catch (e) {
+            console.error(e,"密码修改失败");
+            ctx.app.emit('error',{
+                code: "1002",
+                message: "抱歉，密码修改失败"
+            },ctx);
+        }
+    }
 
-        ctx.body = "密码修改成功";
+    //退出(jwt无法删除token，所以使用黑名单的方法来实现退出功能，   也可以前台直接删除存储的token)
+    async logout(ctx,next){
+        const {authorization} = ctx.request.header;
+        const token = authorization.replace('Bearer ', '').trim();
+        blackUser.push(token);
+        ctx.body = {
+            code: "0000",
+            message: "退出成功"
+        };
     }
 }
 
