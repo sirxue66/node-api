@@ -7,7 +7,7 @@ const blackUser = require("../config/blackList")
 
 //验证token
 const auth = async (ctx,next) => {
-    const {authorization} = ctx.request.header;
+    const { authorization='' } = ctx.request.header;
     const token = authorization.replace('Bearer ', '').trim();   //将token首尾的空格去掉
     // const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcl9uYW1lIjoi5bCP5piOIiwiaXNfYWRtaW4iOmZhbHNlLCJpYXQiOjE2MzY1MjY1MTcsImV4cCI6MTYzNjYxMjkxN30.LOoTygbANVKg9D7U95dcg8825qf8r6oGg7fcYihdBT8";
     // console.log("用户token",token);
@@ -50,6 +50,21 @@ const auth = async (ctx,next) => {
     await next();
 }
 
+//是否是管理员
+const isAdmin = async (ctx,next) => {
+    const {is_admin} = ctx.state.user;
+    if(!is_admin){
+        console.log("该用户没有管理员权限",ctx.state.user);
+        return ctx.body = {
+            code: "1104",
+            message: "上传需要管理员权限"
+        };
+    }
+
+    await next();
+}
+
 module.exports = {
-    auth
+    auth,
+    isAdmin
 }
