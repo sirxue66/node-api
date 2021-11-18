@@ -1,4 +1,5 @@
 const path = require("path")
+const {addG, updateG, removeG, deleteG, restoreG, getG} = require("../service/goods.service")
 
 class Goods {
 
@@ -37,8 +38,142 @@ class Goods {
     }
 
     async addGoods(ctx,next){
-        let {goods_name,goods_price,goods_num,goods_img} = ctx.request.body;
+        try {
+            let res = await addG(ctx.request.body);
 
+            ctx.body = {
+                code: "0000",
+                message: "商品添加成功",
+                result: res
+            };
+        }catch (e) {
+            console.error("添加商品失败",e);
+            ctx.app.emit('error',{
+                code: "1001",
+                message: "服务器出错，添加商品失败"
+            },ctx);
+        }
+    }
+
+    async updateGoods(ctx){
+        let id = ctx.params.id;
+        try {
+            let res = await updateG(id, ctx.request.body);
+            if(res){
+                ctx.body = {
+                    code: "0000",
+                    message: "修改商品成功"
+                };
+            } else {
+                ctx.body = {
+                  code: "0001",
+                  message: "未找到该商品，无效id"
+                };
+            }
+        }
+        catch (e) {
+            console.error("修改商品失败",e);
+            ctx.app.emit('error',{
+                code: "1001",
+                message: "服务器出错，修改商品失败"
+            });
+        }
+    }
+
+    async removeGoods(ctx){
+        let id = ctx.params.id;
+        try {
+            let res = await removeG(id);
+            if(res){
+                ctx.body = {
+                    code: "0000",
+                    message: "删除商品成功"
+                };
+            } else {
+                ctx.body = {
+                    code: "0001",
+                    message: "未找到该商品，无效id"
+                };
+            }
+        }
+        catch (e) {
+            console.error("删除商品失败",e);
+            ctx.app.emit('error',{
+                code: "1001",
+                message: "服务器出错，删除商品失败"
+            });
+        }
+    }
+
+    async deleteGoods(ctx){
+        let id = ctx.params.id;
+        try {
+            let res = await deleteG(id);
+            if(res){
+                ctx.body = {
+                    code: "0000",
+                    message: "下架商品成功"
+                };
+            }
+            else {
+                ctx.body = {
+                    code: "0001",
+                    message: "未找到该商品，无效id"
+                };
+            }
+        }
+        catch (e) {
+            console.error("下架商品失败",e);
+            ctx.app.emit('error',{
+                code: "1001",
+                message: "服务器错误，下架商品失败"
+            });
+        }
+    }
+
+    async restoreGoods(ctx){
+        let id = ctx.params.id;
+        try {
+            let res = await restoreG(id);
+            if(res){
+                ctx.body = {
+                    code: "0000",
+                    message: "上架商品成功"
+                };
+            }
+            else {
+                ctx.body = {
+                    code: "0001",
+                    message: "未找到该商品，无效id"
+                };
+            }
+        }
+        catch (e) {
+            console.error("上架商品失败",e);
+            ctx.app.emit('error',{
+                code: "1001",
+                message: "服务器错误，上架商品失败"
+            });
+        }
+    }
+
+    async getGoods(ctx){
+        const {pageNum = 1,pageSize = 10} = ctx.request.query;
+        try {
+            let res = await getG(pageNum,pageSize);
+            ctx.body = {
+                code: "0000",
+                message: "获取商品列表成功",
+                result: res
+            };
+        }
+        catch (e) {
+            console.error("获取商品列表失败",e);
+            ctx.app.emit('error',{
+                code: "1001",
+                message: "服务器错误，获取商品列表失败"
+            });
+        }
     }
 }
 

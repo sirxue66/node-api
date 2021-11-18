@@ -1,6 +1,6 @@
 /*
-* 路由层     接口路径
-*/
+* 用户模块
+* */
 const Router = require("koa-router")
 const {userValidator, verifyUser, verifyLogin} = require("../middleware/user.middleware")
 const {crpytPassword, crpytNewPassword} = require("../middleware/bcrpyt")
