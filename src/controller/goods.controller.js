@@ -76,7 +76,7 @@ class Goods {
             ctx.app.emit('error',{
                 code: "1001",
                 message: "服务器出错，修改商品失败"
-            });
+            },ctx);
         }
     }
 
@@ -101,7 +101,7 @@ class Goods {
             ctx.app.emit('error',{
                 code: "1001",
                 message: "服务器出错，删除商品失败"
-            });
+            },ctx);
         }
     }
 
@@ -127,7 +127,7 @@ class Goods {
             ctx.app.emit('error',{
                 code: "1001",
                 message: "服务器错误，下架商品失败"
-            });
+            },ctx);
         }
     }
 
@@ -153,7 +153,7 @@ class Goods {
             ctx.app.emit('error',{
                 code: "1001",
                 message: "服务器错误，上架商品失败"
-            });
+            },ctx);
         }
     }
 
@@ -172,7 +172,7 @@ class Goods {
             ctx.app.emit('error',{
                 code: "1001",
                 message: "服务器错误，获取商品列表失败"
-            });
+            },ctx);
         }
     }
 }

@@ -4,15 +4,24 @@
 const Router = require('koa-router')
 
 const {auth} = require('../middleware/auth.middleware')
-const {addCart, removeCart} = require('../controller/cart.controller')
-const {validatorAdd} = require('../middleware/cart.middleware')
+const {addCart, updateCart, getCarts} = require('../controller/cart.controller')
+const {validatorParamsOrQuery, hasGoodsId} = require('../middleware/cart.middleware')
 
 const cartRouter = new Router({prefix: '/carts'})
 
 //添加购物车
-cartRouter.post('/addCart', auth, validatorAdd, addCart)
+cartRouter.post('/addCart', auth, validatorParamsOrQuery({goods_id:{type:'string',required:true}}), hasGoodsId, addCart)
 
-//从购物车移出商品
-cartRouter.post('removeCart', auth, validatorAdd, removeCart)
+//更新购物车
+cartRouter.patch('/updateCart/:id',        //补丁类型，有值就改，没值就不操作
+    auth,
+    validatorParamsOrQuery({
+        number:{type:'string',required:false},
+        selected: {type: 'bool', required: false}}
+        ),
+    updateCart)
+
+//获取购物车列表
+cartRouter.get('/', auth, getCarts)
 
 module.exports = cartRouter
