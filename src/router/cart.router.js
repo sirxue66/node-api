@@ -4,7 +4,7 @@
 const Router = require('koa-router')
 
 const {auth} = require('../middleware/auth.middleware')
-const {addCart, updateCart, getCarts} = require('../controller/cart.controller')
+const {addCart, updateCart, getCarts, removeCarts, getCartsCounts} = require('../controller/cart.controller')
 const {validatorParamsOrQuery, hasGoodsId} = require('../middleware/cart.middleware')
 
 const cartRouter = new Router({prefix: '/carts'})
@@ -17,11 +17,17 @@ cartRouter.patch('/updateCart/:id',        //补丁类型，有值就改，没�
     auth,
     validatorParamsOrQuery({
         number:{type:'string',required:false},
-        selected: {type: 'bool', required: false}}
-        ),
+        selected: {type: 'bool', required: false}
+    }),
     updateCart)
 
 //获取购物车列表
 cartRouter.get('/', auth, getCarts)
+
+//移除购物车
+cartRouter.post('/remove', auth, validatorParamsOrQuery({ids: 'array'}), removeCarts)
+
+//获取购物车商品总数
+cartRouter.get('/counts', auth, getCartsCounts)
 
 module.exports = cartRouter

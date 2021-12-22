@@ -59,6 +59,34 @@ class Cart{
         let endRes = await res.save();   //更新完数据，保存数据
         return endRes;
     }
+
+    async removeCart(ids){
+        let res = Carts.destroy({
+            where: {
+                [Op.in]: ids
+            }
+        });
+        return res;
+    }
+
+    async getCartsCountsService(user_id){
+        let res = await Carts.findAll({
+            attributes:['number'],
+            where: {
+                user_id: user_id
+            }
+        });
+        if(res){
+            let num = 0;
+            res.forEach(i => {
+                num += (i.dataValues.number * 1);
+            });
+            console.error("获取的数量",num);
+            return num;
+        } else {
+            return 0;
+        }
+    }
 }
 
 module.exports = new Cart()

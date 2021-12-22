@@ -1,4 +1,4 @@
-const {creatOrUpdateCart, findCarts, updateCarts} = require("../service/carts.service")
+const {creatOrUpdateCart, findCarts, updateCarts, removeCart, getCartsCountsService} = require("../service/carts.service")
 
 class Carts {
     async addCart(ctx){
@@ -71,6 +71,53 @@ class Carts {
             },ctx)
         }
     }
+
+    async removeCarts(ctx){
+        let ids = ctx.request.body.ids;
+        try {
+            let res = await removeCart(ids);
+            if(res > 0){
+                ctx.body = {
+                    code: "0000",
+                    message: "移除购物车成功",
+                    result: res
+                };
+            } else {
+                ctx.body = {
+                  code: "0001",
+                  message: "未找到数据，无效id"
+                };
+            }
+        } catch (e) {
+            console.log("删除购物车失败",e);
+            ctx.app.emit('error',{
+                code: "1001",
+                message: "服务器错误，购物车删除失败"
+            },ctx);
+        }
+    }
+
+    async getCartsCounts(ctx){
+        let user_id = ctx.state.user.id;
+        try{
+            let res = await getCartsCountsService(user_id);
+            ctx.body = {
+                code: "0000",
+                message: "获取购物车数量成功",
+                result: {
+                    counts: res
+                }
+            };
+        }
+        catch (e) {
+            console.log("获取购物车数量失败",e);
+            ctx.app.emit('error',{
+                code: "1001",
+                message: "服务器错误，购物车数量获取失败"
+            },ctx);
+        }
+    }
+
 }
 
 module.exports = new Carts();

@@ -20,7 +20,8 @@ app.use(KoaBody(
         formidable: {
             uploadDir: path.join(__dirname, '../upload'),               //上传文件的保存路径
             keepExtensions: true        //保持文件后缀名
-        }
+        },
+        parsedMethods: ['POST', 'PUT', 'PATCH', 'DELETE']
     }
 ))           //koabody 中间件要在router之前使用,用来解析接收前端传来的post请求body
 app.use(KoaStatic(path.join(__dirname, '../upload')))
